@@ -12,70 +12,38 @@
           "listen": "test",
           "script": {
             "exec": [
-              "if(responseCode.code === 200){\r",
-              "    var data = JSON.parse(responseBody);\r",
-              "    postman.setEnvironmentVariable(\"token\", data.access_token);\r",
-              "    postman.setEnvironmentVariable(\"refresh_token\", data.refresh_token);\r",
+              "if (pm.response.code === 200) {",
+              "    const data = pm.response.json();",
+              "    pm.environment.set(\"token\", data.access_token);",
+              "    pm.environment.set(\"refresh_token\", data.refresh_token);",
               "}"
             ],
-            "type": "text/javascript",
-            "packages": {}
+            "type": "text/javascript"
           }
         }
       ],
       "request": {
         "method": "POST",
-        "header": [],
+        "header": [
+          { "key": "Content-Type", "value": "application/x-www-form-urlencoded" }
+        ],
         "body": {
           "mode": "urlencoded",
           "urlencoded": [
-            {
-              "key": "client_id",
-              "value": "your_client_id",
-              "type": "text"
-            },
-            {
-              "key": "client_secret",
-              "value": "your_client_secret",
-              "type": "text"
-            },
-            {
-              "key": "grant_type",
-              "value": "password",
-              "type": "text"
-            },
-            {
-              "key": "scope",
-              "value": "openid",
-              "type": "text"
-            },
-            {
-              "key": "username",
-              "value": "your_username",
-              "type": "text"
-            },
-            {
-              "key": "password",
-              "value": "your_password",
-              "type": "text"
-            }
-
+            { "key": "client_id", "value": "your_client_id", "type": "text" },
+            { "key": "client_secret", "value": "your_client_secret", "type": "text" },
+            { "key": "grant_type", "value": "password", "type": "text" },
+            { "key": "scope", "value": "openid", "type": "text" },
+            { "key": "username", "value": "your_username", "type": "text" },
+            { "key": "password", "value": "your_password", "type": "text" }
           ]
         },
         "url": {
           "raw": "http://localhost:9080/realms/your-realm/protocol/openid-connect/token",
           "protocol": "http",
-          "host": [
-            "localhost"
-          ],
+          "host": ["localhost"],
           "port": "9080",
-          "path": [
-            "realms",
-            "your-realm",
-            "protocol",
-            "openid-connect",
-            "token"
-          ]
+          "path": ["realms", "your-realm", "protocol", "openid-connect", "token"]
         }
       },
       "response": []
