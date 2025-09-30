@@ -1,0 +1,80 @@
+###############promtail-config.yml################
+########### loyihani root qismida data/promtail/promtail-config.yaml qismida bolsin ##########
+
+server:
+  http_listen_port: 9080
+  grpc_listen_port: 0
+
+positions:
+  filename: /tmp/positions.yaml
+
+clients:
+  - url: http://loki:3100/loki/api/v1/push
+
+scrape_configs:
+  - job_name: spring-boot-logs
+    static_configs:
+      - targets:
+          - localhost
+        labels:
+          job: spring-boot
+          app: meta-lead-creator
+          __path__: /var/log/app.log
+
+
+
+########## loki-config.yml ##############
+########## loyihani root qismida data/loki/loki-config.yaml qismida bolsin ##########
+
+auth_enabled: false
+
+server:
+  http_listen_port: 3100
+  grpc_listen_port: 9096
+
+ingester:
+  lifecycler:
+    ring:
+      kvstore:
+        store: inmemory
+      replication_factor: 1
+  chunk_idle_period: 5m
+  chunk_retain_period: 30s
+  max_chunk_age: 1h
+  max_transfer_retries: 0
+
+schema_config:
+  configs:
+    - from: 2020-10-24
+      store: boltdb-shipper
+      object_store: filesystem
+      schema: v11
+      index:
+        prefix: index_
+        period: 24h
+
+storage_config:
+  boltdb_shipper:
+    active_index_directory: /loki/index
+    cache_location: /loki/boltdb-cache
+    shared_store: filesystem
+  filesystem:
+    directory: /loki/chunks
+
+limits_config:
+  retention_period: 168h   # 7 kun log saqlash
+  allow_structured_metadata: false
+
+table_manager:
+  retention_deletes_enabled: true
+  retention_period: 168h   # 7 kun log saqlash
+
+query_scheduler:
+  max_outstanding_requests_per_tenant: 2048
+
+common:
+  path_prefix: /loki
+  ring:
+    instance_addr: 127.0.0.1
+    kvstore:
+      store: inmemory
