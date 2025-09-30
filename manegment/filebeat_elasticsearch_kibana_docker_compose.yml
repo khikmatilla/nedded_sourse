@@ -1,0 +1,41 @@
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.17.23
+    container_name: elasticsearch
+    environment:
+      - discovery.type=single-node
+      - node.name=es-node-1
+      - cluster.name=es-docker-cluster
+      - bootstrap.memory_lock=true
+      - ES_JAVA_OPTS=-Xms1g -Xmx1g
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - es-data:/usr/share/elasticsearch/data
+      - ./data/elasticsearch/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml:ro
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:7.17.24
+    container_name: kibana
+    environment:
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+    ports:
+      - "5601:5601"
+    depends_on:
+      - elasticsearch
+
+  filebeat:
+    image: docker.elastic.co/beats/filebeat:7.17.24
+    container_name: filebeat
+    user: root
+    volumes:
+      - ./data/filebeat/filebeat.yml:/usr/share/filebeat/filebeat.yml
+      - ./logs:/usr/share/filebeat/logs:ro
+    command: [ "--strict.perms=false" ]
+    depends_on:
+      - elasticsearch
+      - kibana
