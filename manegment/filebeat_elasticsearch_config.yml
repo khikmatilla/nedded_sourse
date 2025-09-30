@@ -1,0 +1,29 @@
+
+################ filebeat.yml ################
+############## loyihani root qismida data/filebeat/filebeat.yml qismida bo'lsin #################
+
+filebeat.inputs:
+  - type: log
+    enabled: true
+    paths:
+      - /usr/share/filebeat/logs/*.log
+
+setup.template.name: "filebeat"
+setup.template.pattern: "filebeat-*"
+
+output.elasticsearch:
+  hosts: ["http://elasticsearch:9200"]
+  index: "filebeat-%{[agent.version]}-%{+yyyy.MM.dd}"
+
+
+
+
+############# elasticsearch.yml ###################
+############## loyihani root qismida data/elasticsearch/elasticsearch.yml qismida bo'lsin #################
+
+cluster.name: "es-docker-cluster"
+node.name: "es-node-1"
+network.host: 0.0.0.0
+discovery.type: single-node
+logger.level: info
+xpack.security.enabled: false
